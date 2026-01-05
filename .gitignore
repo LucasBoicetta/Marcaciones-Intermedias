@@ -1,0 +1,35 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Entornos Virtuales (Virtual Environments) ---
+venv/
+env/
+.env
+.venv/
+
+# --- Variables de Entorno y Secretos (MUY IMPORTANTE) ---
+.env
+instance/
+config.py
+
+# --- Base de Datos (SQLite) ---
+*.sqlite3
+*.db
+app.db
+migrations/
+
+# --- VS Code (Editor) ---
+.vscode/
+*.code-workspace
+
+# --- Logs y Errores ---
+*.log
+access.log
+error.log
+
+# --- Archivos del Sistema Operativo (Windows/Mac) ---
+Thumbs.db
+Desktop.ini
+.DS_Store
