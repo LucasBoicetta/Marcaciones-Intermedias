@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="col-md-5 col-lg-4">
+            
+            <!-- Tarjeta de Login -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                
+                <!-- Encabezado con Logo -->
+                <div class="card-header bg-white text-center border-0 pt-4 pb-0">
+                    <img src="{{ url_for('static', filename='logoSindicaturaNew-removebg-preview.png')}}" 
+                         alt="Logo SGQ" 
+                         style="width: 350px; height: auto;" 
+                         class="mb-3">
+                    <h5 class="fw-bold text-primary mb-1">Bienvenido</h5>
+                    <p class="text-muted small">Ingrese sus credenciales para continuar</p>
+                </div>
+
+                <div class="card-body p-4">
+                    <form action="" method="post" novalidate>
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Campo Cédula -->
+                        <div class="mb-3">
+                            <label for="ci" class="form-label fw-bold small text-secondary">
+                                <i class="fa-solid fa-id-card me-1"></i> Cédula de Identidad
+                            </label>
+                            <div class="input-group">
+                                {{ form.ci(class="form-control form-control-lg bg-light border-0", placeholder="Ej: 1234567") }}
+                            </div>
+                            {% for error in form.ci.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Campo Contraseña -->
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-bold small text-secondary">
+                                <i class="fa-solid fa-lock me-1"></i> Contraseña
+                            </label>
+                            <div class="input-group">
+                                {{ form.password(class="form-control form-control-lg bg-light border-0", placeholder="••••••••") }}
+                            </div>
+                            {% for error in form.password.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Botón Ingresar -->
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary btn-lg fw-bold shadow-sm") }}
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- Pie de tarjeta -->
+                <div class="card-footer bg-light text-center py-3 border-0">
+                    <small class="text-muted">Sindicatura General de Quiebras &copy; 2025</small>
+                </div>
+            </div>
+            
+            <!-- Mensaje de ayuda flotante (opcional) -->
+            <div class="text-center mt-3">
+                <small class="text-muted">
+                    <i class="fa-solid fa-circle-info me-1"></i> 
+                    Utilice las mismas credenciales que en el sistema principal.
+                </small>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Estilos específicos para inputs (puedes moverlos a style.css si prefieres) -->
+<style>
+    .form-control:focus {
+        box-shadow: none;
+        border: 1px solid var(--primary-color) !important;
+        background-color: white !important;
+    }
+    /* Animación suave al cargar */
+    .card {
+        animation: fadeInUp 0.5s ease-out;
+    }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}

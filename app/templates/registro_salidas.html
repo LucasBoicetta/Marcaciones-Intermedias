@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- CAMBIO AQUÍ: Aumenté a -135px para asegurar que entre sin scroll general -->
+<div class="d-flex flex-column" style="height: calc(100vh - 135px);">
+    <div class="mb-3">
+            <a href="{{ url_for('index') }}" class="btn btn-back shadow-sm">
+                <i class="fa-solid fa-arrow-left me-2"></i> Volver al Menú
+            </a>
+    </div>
+    <!-- 1. Panel de Filtros -->
+    <div class="card shadow-sm border-0 flex-shrink-0 mb-3">
+        <div class="card-header bg-white border-0 py-2 px-3">
+            <h6 class="card-title text-primary fw-bold mb-0"><i class="fa-solid fa-users-gear me-2"></i>Administración de Salidas</h6>
+        </div>
+        <div class="card-body py-2 px-3">
+            <form action="{{ url_for('registro_salidas') }}" method="GET" class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold text-secondary small mb-0">Fecha Desde</label>
+                    <input type="date" class="form-control form-control-sm" name="fecha_desde" value="{{ fecha_desde }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold text-secondary small mb-0">Fecha Hasta</label>
+                    <input type="date" class="form-control form-control-sm" name="fecha_hasta" value="{{ fecha_hasta }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold text-secondary small mb-0">Cédula (Opcional)</label>
+                    <input type="text" class="form-control form-control-sm" name="cedula" value="{{ cedula_filtro if cedula_filtro else '' }}" placeholder="Filtrar por CI...">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold">
+                        <i class="fa-solid fa-magnifying-glass me-2"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Contenedor de Tablas -->
+    {% if registros %}
+        <div class="flex-grow-1 d-flex flex-column gap-3" style="min-height: 0;">
+            
+            <!-- TABLA 1: RESUMEN -->
+            <div class="card border-0 shadow-sm flex-grow-1 overflow-hidden">
+                <div class="card-header bg-white border-bottom py-2 flex-shrink-0">
+                    <h6 class="mb-0 fw-bold text-secondary"><i class="fa-solid fa-chart-pie me-2"></i>Resumen por Funcionario</h6>
+                </div>
+                <div class="card-body p-0 position-relative">
+                    <div class="table-responsive position-absolute top-0 start-0 w-100 h-100">
+                        <table class="table table-striped mb-0 table-sm">
+                            <thead class="bg-light sticky-top" style="z-index: 10;">
+                                <tr>
+                                    <th>Funcionario</th>
+                                    <th class="text-center">Total</th>
+                                    <th class="text-center text-success">Cumplió</th>
+                                    <th class="text-center text-warning">Alerta</th>
+                                    <th class="text-center text-danger">Incumplió</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for stat in resumen %}
+                                <tr>
+                                    <td class="fw-bold">{{ stat.nombre }} <span class="text-muted small">({{ stat.ci_nro }})</span></td>
+                                    <td class="text-center fw-bold">{{ stat.total }}</td>
+                                    <td class="text-center">
+                                        {% if stat.cumplio > 0 %} <span class="badge bg-success rounded-pill">{{ stat.cumplio }}</span> {% else %} - {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if stat.alerta > 0 %} <span class="badge bg-warning text-dark rounded-pill">{{ stat.alerta }}</span> {% else %} - {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if stat.incumplio > 0 %} <span class="badge bg-danger rounded-pill">{{ stat.incumplio }}</span> {% else %} - {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- TABLA 2: DETALLE -->
+            <div class="card border-0 shadow-sm overflow-hidden" style="flex: 1.5; min-height: 0;">
+                <div class="card-header bg-white border-bottom py-2 flex-shrink-0">
+                    <h6 class="mb-0 fw-bold text-secondary"><i class="fa-solid fa-list-check me-2"></i>Detalle de Registros</h6>
+                </div>
+                <div class="card-body p-0 position-relative">
+                    <div class="table-responsive position-absolute top-0 start-0 w-100 h-100">
+                        <table class="table table-hover align-middle table-sm mb-0">
+                            <thead class="bg-light sticky-top" style="z-index: 10;">
+                                <tr>
+                                    <th class="ps-3">Funcionario</th>
+                                    <th>Fecha</th>
+                                    <th class="text-center bg-light border-start">Salida Est.</th>
+                                    <th class="text-center bg-light border-end">Salida Real</th>
+                                    <th class="text-center bg-light border-start">Llegada Est.</th>
+                                    <th class="text-center bg-light border-end">Llegada Real</th>
+                                    <th>Motivo / Destino</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reg in registros %}
+                                <tr>
+                                    <td class="ps-3">
+                                        <div class="fw-bold text-dark">{{ reg.nombre_completo }}</div>
+                                        <div class="small text-muted">CI: {{ reg.ci_nro }}</div>
+                                    </td>
+                                    <td>{{ reg.fecha }}</td>
+                                    <td class="text-center border-start">{{ reg.hora_salida_estipulada }}</td>
+                                    <td class="text-center border-end {{ reg.clase_salida }}">{{ reg.hora_salida_cercana }}</td>
+                                    <td class="text-center border-start">{{ reg.hora_llegada_estipulada }}</td>
+                                    <td class="text-center border-end {{ reg.clase_llegada }}">{{ reg.hora_llegada_cercana }}</td>
+                                    <td class="small">
+                                        <div class="text-truncate" style="max-width: 150px;" title="{{ reg.motivo }}">
+                                            <i class="fa-solid fa-comment-dots me-1 text-secondary"></i> {{ reg.motivo }}
+                                        </div>
+                                        <div class="text-truncate text-muted" style="max-width: 150px;" title="{{ reg.destino }}">
+                                            <i class="fa-solid fa-location-arrow me-1"></i> {{ reg.destino }}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    {% elif fecha_desde %}
+        <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+            <div class="text-center">
+                <div class="mb-3 text-muted opacity-50"><i class="fa-solid fa-magnifying-glass fa-3x"></i></div>
+                <h5 class="text-muted">No se encontraron registros.</h5>
+            </div>
+        </div>
+    {% else %}
+        <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+            <div class="text-center text-muted">
+                <p>Utilice los filtros superiores.</p>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

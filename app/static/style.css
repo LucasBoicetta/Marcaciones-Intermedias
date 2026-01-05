@@ -1,0 +1,132 @@
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --bg-color: #f8f9fa;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--bg-color);
+}
+
+/* Estilos para el Menú Principal (Index) */
+.menu-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-menu {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    background: white;
+    overflow: hidden;
+}
+
+.menu-header {
+    background-color: white;
+    padding: 2rem 1rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.menu-logo {
+    width: 80px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+.menu-options .list-group-item {
+    border: none;
+    padding: 1.2rem 1.5rem;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+}
+
+.menu-options .list-group-item:last-child {
+    border-bottom: none;
+}
+
+.menu-options .list-group-item:hover {
+    background-color: #f0f7ff;
+    padding-left: 2rem; /* Efecto de desplazamiento */
+    color: #0a58ca;
+    cursor: pointer;
+}
+
+.menu-options .list-group-item i {
+    margin-right: 15px;
+    width: 25px;
+    text-align: center;
+}
+
+/* Estilos para Tablas y Reportes */
+.report-header {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+    border-left: 5px solid var(--primary-color);
+}
+
+.table-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    overflow: hidden;
+    padding: 1rem;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.status-badge {
+    font-size: 0.85rem;
+    padding: 0.4em 0.8em;
+    border-radius: 20px;
+}
+
+
+.btn-back {
+    background-color: #5abaeb; /* Azul grisáceo (Blue Grey) */
+    border-color: #5abaeb;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+    background-color: #79c9ee; /* Un tono más oscuro al pasar el mouse */
+    border-color: #79c9ee;
+    color: white;
+    transform: translateX(-3px); /* Pequeño efecto de movimiento a la izquierda */
+}
+
+.table-scroll {
+    max-height: 300px; /* Define la altura máxima antes de que aparezca la barra */
+    overflow-y: auto;  /* Activa el scroll vertical */
+    display: block;    /* Asegura que el div respete la altura */
+    border-bottom: 1px solid #dee2e6; /* Opcional: borde estético al final */
+}
+
+/* Opcional: Para que los encabezados se queden fijos al bajar (Sticky Header) */
+.table-scroll thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: #f8f9fa; /* Color de fondo para tapar el contenido al hacer scroll */
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); /* Sombra sutil para separar el header */
+}

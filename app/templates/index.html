@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="menu-container">
+    <div class="col-md-6 col-lg-5">
+        <div class="card card-menu">
+            <div class="menu-header">
+                <!-- Puedes poner la ruta a tu logo real aquí -->
+                <img src="{{ url_for('static', filename='logoSindicaturaNew-removebg-preview.png')}}" alt="Logo" class="menu-logo" style="width: 420px;height: auto; max-width: 100%M;">
+                <h4 class="fw-bold text-dark mb-1">Sindicatura General de Quiebras</h4>
+                <p class="text-muted mb-0">Sistema de Marcaciones Intermedias</p>
+            </div>
+            
+            <div class="list-group list-group-flush menu-options">
+                <a href="{{ url_for('formulario_salidas') }}" class="list-group-item list-group-item-action">
+                    <i class="fa-solid fa-pen-to-square text-primary"></i>
+                    Solicitar Salida Intermedia
+                </a>
+                
+                <a href="{{ url_for('registro_salidas_funcionario') }}" class="list-group-item list-group-item-action">
+                    <i class="fa-solid fa-list-check text-success"></i>
+                    Consultar Mis Registros
+                </a>
+
+                <!-- Opción visible solo para admins si tienes ese campo, si no, quita el if -->
+                {% if current_user.tipousuario == '1' or current_user.cedula == '6556063' %} 
+                <a href="{{ url_for('registro_salidas') }}" class="list-group-item list-group-item-action">
+                    <i class="fa-solid fa-users-viewfinder text-warning"></i>
+                    Administrar Salidas (Admin)
+                </a>
+                {% endif %}
+
+                <a href="{{ url_for('logout') }}" class="list-group-item list-group-item-action text-danger">
+                    <i class="fa-solid fa-power-off"></i>
+                    Cerrar Sesión
+                </a>
+            </div>
+            
+            <div class="card-footer text-center bg-white border-0 py-3">
+                <small class="text-muted">Usuario: <strong>{{ current_user.nombre }} {{ current_user.apellido }}</strong></small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

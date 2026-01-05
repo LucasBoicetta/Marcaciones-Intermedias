@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            
+            <!-- Encabezado de la Tarjeta -->
+            <div class="card-header bg-primary text-white p-4 text-center border-0">
+                <h4 class="mb-1 fw-bold"><i class="fa-solid fa-file-pen me-2"></i>Solicitud de Salida</h4>
+                <p class="mb-0 text-white-50">Complete los datos para registrar su salida</p>
+            </div>
+
+            <div class="card-body p-4">
+                <form action="" method="post" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <!-- Fila de Horarios -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-secondary small">
+                                <i class="fa-regular fa-clock me-1"></i> Hora Salida Estipulada
+                            </label>
+                            {{ form.horario_salida(class="form-control form-control-lg bg-light border-0", type="time") }}
+                            {% for error in form.horario_salida.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-secondary small">
+                                <i class="fa-solid fa-clock-rotate-left me-1"></i> Hora Retorno Estipulada
+                            </label>
+                            {{ form.horario_llegada(class="form-control form-control-lg bg-light border-0", type="time") }}
+                            {% for error in form.horario_llegada.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Motivo -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary small">
+                            <i class="fa-solid fa-circle-question me-1"></i> Motivo
+                        </label>
+                        {{ form.motivo(class="form-control bg-light border-0", placeholder="Ej: Trámites bancarios, Consulta médica...", rows="2") }}
+                        {% for error in form.motivo.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Destino -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-secondary small">
+                            <i class="fa-solid fa-location-dot me-1"></i> Destino / Lugar
+                        </label>
+                        {{ form.destino(class="form-control bg-light border-0", placeholder="Ej: Banco Nacional, IPS Central...") }}
+                        {% for error in form.destino.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('index') }}" class="btn btn-back shadow-sm">
+                            <i class="fa-solid fa-arrow-left me-2"></i> Volver al Menú
+                        </a>
+                        <button type="submit" class="btn btn-primary fw-bold px-4 shadow-sm">
+                            <i class="fa-solid fa-paper-plane me-2"></i> Registrar Solicitud
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- Nota informativa -->
+        <div class="alert alert-info mt-4 shadow-sm border-0 rounded-3">
+            <div class="d-flex">
+                <div class="me-3"><i class="fa-solid fa-circle-info fa-2x"></i></div>
+                <div>
+                    <h6 class="fw-bold mb-1">Información Importante</h6>
+                    <p class="mb-0 small">Recuerde que las marcaciones se sincronizarán con el reloj biométrico al día siguiente. Asegúrese de marcar al salir y al volver.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
