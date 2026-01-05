@@ -1,35 +1,31 @@
-# --- Python ---
+# --- Python General ---
 __pycache__/
 *.py[cod]
 *$py.class
 
-# --- Entornos Virtuales (Virtual Environments) ---
+# --- Entornos Virtuales ---
 venv/
 env/
-.env
 .venv/
 
-# --- Variables de Entorno y Secretos (MUY IMPORTANTE) ---
+# --- Variables de Entorno y Secretos ---
 .env
+.flaskenv
 instance/
+
+# --- Configuración Sensible ---
+# Si config.py tiene contraseñas reales, mantenlo aquí.
+# Si usas variables de entorno para todo, podrías quitarlo.
 config.py
 
-# --- Base de Datos (SQLite) ---
+# --- Base de Datos ---
 *.sqlite3
 *.db
 app.db
-migrations/
 
-# --- VS Code (Editor) ---
+# --- IDEs y Editores ---
 .vscode/
-*.code-workspace
+.idea/
 
-# --- Logs y Errores ---
+# --- Logs ---
 *.log
-access.log
-error.log
-
-# --- Archivos del Sistema Operativo (Windows/Mac) ---
-Thumbs.db
-Desktop.ini
-.DS_Store
