@@ -1,5 +1,5 @@
 from app import db
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from datetime import datetime, date
 import hashlib
 import base64
@@ -49,6 +49,31 @@ class FormularioSalida(db.Model):
     fecha_creacion = db.Column(db.DateTime, nullable=False, default=date.today())
 
 
+    @classmethod
+    def obtener_reporte_admin(cls, fecha_desde, fecha_hasta, cedula=None):
+        """Retorna un reporte con todos los formularios enviados, tengan o no registrada marcaciones en un rango de fechas.
+           Tambien se puede filtrar por cedula."""
+        query = db.session.query(cls, MarcacionIntermediaGeneral, Usuario)\
+        .outerjoin(MarcacionIntermediaGeneral, (cls.ci_nro == MarcacionIntermediaGeneral.ci_nro) & 
+                   (cls.fecha == MarcacionIntermediaGeneral.fecha_marcacion))\
+        .join(Usuario, cls.ci_nro == Usuario.cedula)\
+        .filter(cls.fecha.between(fecha_desde, fecha_hasta))
+
+        if cedula:
+            query = query.filter(cls.ci_nro == cedula)
+
+        return query.order_by(cls.fecha.desc(), cls.hora_salida_estipulada.asc()).all()
+    
+    @classmethod
+    def obtener_reporte_usuario(cls, fecha_desde, fecha_hasta):
+        """Retorna un reporte al usuario que muestra el resultado de sus formularios enviados y sus marcaciones"""
+        query = db.session.query(cls, MarcacionIntermediaGeneral)\
+        .outerjoin(MarcacionIntermediaGeneral, (cls.ci_nro == MarcacionIntermediaGeneral.ci_nro) &
+                (cls.fecha == MarcacionIntermediaGeneral.fecha_marcacion))\
+        .filter(cls.ci_nro == current_user.cedula, cls.fecha.between(fecha_desde, fecha_hasta))
+
+        return query.order_by(cls.fecha.desc(), cls.hora_salida_estipulada.asc()).all()
+    
 #Vista existente marcaciones_intermedias_general (solo de lectura).
 class MarcacionIntermediaGeneral(db.Model):
     __tablename__ = 'marcaciones_intermedias_general'
@@ -69,7 +94,7 @@ class MarcacionIntermediaGeneral(db.Model):
     hora_marcacion_9 = db.Column(db.String)
     hora_marcacion_10 = db.Column(db.String)
 
-
+    
     def get_marcaciones_list(self):
         """Retorna lista de objetos time, convirtiendo desde string"""
         marcaciones = []

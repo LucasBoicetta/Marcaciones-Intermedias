@@ -1,132 +1,191 @@
+/* Importar Inter: La fuente de las apps modernas */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 :root {
-    --primary-color: #0d6efd;
-    --secondary-color: #6c757d;
-    --bg-color: #f8f9fa;
+    --primary-color: #2563eb;    /* Un azul más vibrante y moderno */
+    --primary-dark: #1e40af;
+    --bg-main: #f1f5f9;         /* Fondo gris azulado muy suave */
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
 }
 
 body {
-    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background-color: var(--bg-color);
+    font-family: 'Inter', sans-serif; /* Cambio de fuente */
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    letter-spacing: -0.01em; /* Ajuste tipográfico moderno */
 }
 
-/* Estilos para el Menú Principal (Index) */
-.menu-container {
-    min-height: 80vh;
+/* Navbar más limpia */
+.navbar {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0;
+}
+.navbar-brand, .nav-link {
+    color: var(--text-main) !important;
+}
+
+/* Tarjetas Estilo "SaaS" */
+.card {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important; /* Bordes más redondeados */
+    box-shadow: var(--card-shadow) !important;
+}
+
+/* Botones con más "cuerpo" */
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    border-radius: 8px;
+}
+
+.btn-back {
+    background-color: white;
+    color: var(--text-main);
+    border: 1px solid #e2e8f0;
+}
+.btn-back:hover {
+    background-color: #f8fafc;
+    transform: none;
+}
+
+/* Tablas Modernas */
+.table thead th {
+    background-color: #f8fafc;
+    text-transform: none; /* Quitar mayúsculas forzadas */
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-top: none;
+    padding: 12px 16px;
+}
+
+.table tbody td {
+    padding: 12px 16px;
+    vertical-align: middle;
+}
+
+/* Badges redondeados tipo "Pill" */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+    border-radius: 6px; /* No tan redondos, más cuadrados suaves */
+}
+
+/* --- Mejoras para el Index --- */
+.action-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid transparent !important;
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color) !important;
+    background-color: #fff;
+}
+
+.icon-box {
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 12px;
 }
 
-.card-menu {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-    background: white;
-    overflow: hidden;
+/* --- Mejoras para la Tabla Detalle --- */
+.extra-small {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
 }
 
-.menu-header {
-    background-color: white;
-    padding: 2rem 1rem 1rem;
-    text-align: center;
-    border-bottom: 1px solid #eee;
-}
-
-.menu-logo {
-    width: 80px;
-    height: auto;
-    margin-bottom: 1rem;
-}
-
-.menu-options .list-group-item {
-    border: none;
-    padding: 1.2rem 1.5rem;
-    font-size: 1.1rem;
-    color: var(--primary-color);
-    transition: all 0.2s ease;
-    border-bottom: 1px solid #f0f0f0;
+.avatar-circle {
+    width: 35px;
+    height: 35px;
+    background-color: #e2e8f0;
+    color: #475569;
+    border-radius: 50%;
     display: flex;
     align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
 }
 
-.menu-options .list-group-item:last-child {
-    border-bottom: none;
+/* Ajuste de colores en texto para que combinen con la opacidad sugerida */
+.text-success.fw-bold { color: #15803d !important; }
+.text-warning.fw-bold { color: #a16207 !important; }
+.text-danger.fw-bold { color: #b91c1c !important; }
+
+/* Limpieza de tablas para evitar headers movidos */
+.table-responsive-scroll {
+    position: relative;
+    overflow-y: auto;
+    /* Evitamos display: block aquí para no romper el layout de la tabla */
 }
 
-.menu-options .list-group-item:hover {
-    background-color: #f0f7ff;
-    padding-left: 2rem; /* Efecto de desplazamiento */
-    color: #0a58ca;
-    cursor: pointer;
-}
-
-.menu-options .list-group-item i {
-    margin-right: 15px;
-    width: 25px;
-    text-align: center;
-}
-
-/* Estilos para Tablas y Reportes */
-.report-header {
-    background: white;
-    border-radius: 10px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    margin-bottom: 2rem;
-    border-left: 5px solid var(--primary-color);
-}
-
-.table-container {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    overflow: hidden;
-    padding: 1rem;
-}
-
-.table thead th {
-    background-color: #f8f9fa;
-    color: #495057;
-    font-weight: 600;
-    border-bottom: 2px solid #dee2e6;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-}
-
-.status-badge {
-    font-size: 0.85rem;
-    padding: 0.4em 0.8em;
-    border-radius: 20px;
-}
-
-
-.btn-back {
-    background-color: #5abaeb; /* Azul grisáceo (Blue Grey) */
-    border-color: #5abaeb;
-    color: white;
-    transition: all 0.3s ease;
-}
-
-.btn-back:hover {
-    background-color: #79c9ee; /* Un tono más oscuro al pasar el mouse */
-    border-color: #79c9ee;
-    color: white;
-    transform: translateX(-3px); /* Pequeño efecto de movimiento a la izquierda */
-}
-
-.table-scroll {
-    max-height: 300px; /* Define la altura máxima antes de que aparezca la barra */
-    overflow-y: auto;  /* Activa el scroll vertical */
-    display: block;    /* Asegura que el div respete la altura */
-    border-bottom: 1px solid #dee2e6; /* Opcional: borde estético al final */
-}
-
-/* Opcional: Para que los encabezados se queden fijos al bajar (Sticky Header) */
-.table-scroll thead th {
+/* Forzar que el header se quede arriba de verdad */
+.sticky-thead {
     position: sticky;
     top: 0;
-    z-index: 1;
-    background-color: #f8f9fa; /* Color de fondo para tapar el contenido al hacer scroll */
-    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); /* Sombra sutil para separar el header */
+    z-index: 1020;
+    background-color: #f8fafc; /* Color del fondo de la cabecera */
+    box-shadow: inset 0 -1px 0 #e2e8f0; /* Línea divisoria sutil */
+}
+
+/* Ajuste de altura para los bloques */
+.section-resumen {
+    flex-shrink: 0; /* No deja que el detalle la aplaste */
+}
+
+.section-detalle {
+    flex-grow: 1;   /* Esta tabla toma todo el espacio sobrante */
+    min-height: 0;  /* TRUCO CLAVE: permite que el hijo scrollee en flex */
+}
+
+/* Altura dinámica para los contenedores internos */
+.overflow-auto {
+    overflow-y: auto !important;
+}
+
+.custom-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Tipografía y micro-diseño */
+.extra-small {
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+}
+
+/* Evitar que el header de la tabla desaparezca al hacer scroll */
+.sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    background-color: #f8fafc !important;
+}
+
+/* Estilo para los badges e iconos */
+.bg-opacity-10 {
+    --bs-bg-opacity: 0.1;
 }

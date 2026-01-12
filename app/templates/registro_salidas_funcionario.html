@@ -31,7 +31,12 @@
                 </form>
             </div>
         </div>
-
+{% set colors = {
+    'cumplio': 'text-success fw-bold',
+    'alerta': 'text-warning fw-bold',
+    'incumplio': 'text-danger fw-bold',
+    'no_marco': 'text-danger fw-bold'
+}%}
         <!-- Mostrar resultados solo si se ha realizado una búsqueda -->
         {% if fecha_desde and fecha_hasta %}
             
@@ -75,13 +80,13 @@
                                     
                                     <!-- Salida -->
                                     <td class="text-center border-start">{{ reg.hora_salida_estipulada }}</td>
-                                    <td class="text-center border-end {{ reg.clase_salida }}">
+                                    <td class="text-center border-end {{ colors[reg.estado_salida] }}">
                                         {{ reg.hora_salida_cercana }}
                                     </td>
                                     
                                     <!-- Llegada -->
                                     <td class="text-center border-start">{{ reg.hora_llegada_estipulada }}</td>
-                                    <td class="text-center border-end {{ reg.clase_llegada }}">
+                                    <td class="text-center border-end {{ colors[reg.estado_llegada] }}">
                                         {{ reg.hora_llegada_cercana}}
                                     </td>
                                     
