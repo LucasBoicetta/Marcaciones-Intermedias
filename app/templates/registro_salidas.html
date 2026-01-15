@@ -1,165 +1,253 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="d-flex flex-column" style="height: calc(100vh - 120px);">
+<!-- Contenedor principal con altura fija -->
+<div class="flex flex-col" style="height: calc(100vh - 215px);">
+  
+  <!-- Cabecera - FLEX-SHRINK-0 -->
+  <div class="flex items-center justify-between mb-4 flex-shrink-0">
+    <a href="{{ url_for('index') }}" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 text-sm font-medium transition-all text-slate-700 dark:text-slate-200 no-underline hover:no-underline">
+      <span class="material-symbols-outlined text-lg">arrow_back</span>
+      Volver al Menú
+    </a>
+    <div class="hidden sm:block text-slate-400 dark:text-slate-500 text-sm italic">
+      Panel Administrativo / Gestión de Asistencia
+    </div>
+  </div>
+
+  <!-- Filtros - FLEX-SHRINK-0 -->
+  <section class="bg-white dark:bg-slate-800 p-5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm mb-4 flex-shrink-0">
+    <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+      <div class="space-y-1.5">
+        <label class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 px-1">Desde</label>
+        {{ form.fecha_desde(class="w-full h-11 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-md focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all text-sm") }}
+      </div>
+      <div class="space-y-1.5">
+        <label class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 px-1">Hasta</label>
+        {{ form.fecha_hasta(class="w-full h-11 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-md focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all text-sm") }}
+      </div>
+      <div class="space-y-1.5">
+        <label class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 px-1">Cédula</label>
+        {{ form.cedula(class="w-full h-11 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-md focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all placeholder:text-slate-400 text-sm", placeholder="Opcional...") }}
+      </div>
+      <div>
+        <button type="submit" class="w-full h-11 bg-primary hover:bg-blue-700 text-white font-semibold rounded-md shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all">
+          <span class="material-symbols-outlined text-lg">search</span>
+          Filtrar Registros
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Colores PASTELES más suaves -->
+  {% set colors = {
+    'cumplio': 'text-emerald-700 dark:text-emerald-300',
+    'alerta': 'text-amber-700 dark:text-amber-300',
+    'incumplio': 'text-rose-700 dark:text-rose-300',
+    'no_marco': 'text-rose-700 dark:text-rose-300'
+  } %}
+
+  {% set bg_colors = {
+    'cumplio': 'bg-emerald-50/80 dark:bg-emerald-900/10',
+    'alerta': 'bg-amber-50/80 dark:bg-amber-900/10',
+    'incumplio': 'bg-rose-50/80 dark:bg-rose-900/10',
+    'no_marco': 'bg-rose-50/80 dark:bg-rose-900/10'
+  } %}
+
+  {% set border_colors = {
+    'cumplio': 'border-emerald-200/50 dark:border-emerald-800/20',
+    'alerta': 'border-amber-200/50 dark:border-amber-800/20',
+    'incumplio': 'border-rose-200/50 dark:border-rose-800/20',
+    'no_marco': 'border-rose-200/50 dark:border-rose-800/20'
+  } %}
+
+  {% if registros %}
+  <!-- Layout principal: FLEX-GROW para ocupar espacio restante -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-grow min-h-0">
     
-    <div class="mb-3 flex-shrink-0">
-        <a href="{{ url_for('index') }}" class="btn btn-back btn-sm shadow-sm">
-            <i class="fa-solid fa-arrow-left me-2"></i> Volver al Menú
-        </a>
-    </div>
-
-    <div class="card shadow-sm border-0 flex-shrink-0 mb-3">
-        <div class="card-body py-2 px-3">
-            <form action="{{ url_for('registro_salidas') }}" method="GET" class="row g-2 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label small fw-bold text-muted mb-0">Desde</label>
-                    {{ form.fecha_desde(class="form-control form-control-sm") }}
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label small fw-bold text-muted mb-0">Hasta</label>
-                    {{ form.fecha_hasta(class="form-control form-control-sm") }}
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label small fw-bold text-muted mb-0">Cédula</label>
-                    {{ form.cedula(class="form-control form-control-sm", placeholder="Opcional...") }}
-                </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold">
-                        <i class="fa-solid fa-magnifying-glass me-2"></i> Filtrar
-                    </button>
-                </div>
-            </form>
+    <!-- Sidebar resumen - CLICKEABLE -->
+    <aside class="lg:col-span-4 flex flex-col min-h-0">
+      <div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col h-full">
+        <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 flex items-center justify-between flex-shrink-0">
+          <div class="flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200 text-sm">
+            <span class="material-symbols-outlined text-primary">pie_chart</span>
+            Resumen por Funcionario
+          </div>
         </div>
-    </div>
 
-    {% set colors = {
-        'cumplio': 'text-success fw-bold',
-        'alerta': 'text-warning fw-bold',
-        'incumplio': 'text-danger fw-bold',
-        'no_marco': 'text-danger fw-bold'
-    }%}
-
-    {% if registros %}
-        <div class="row g-3 flex-grow-1 mb-2" style="min-height: 0;">
+        <!-- Scroll interno del sidebar -->
+        <div class="p-4 space-y-3 overflow-y-auto custom-scrollbar flex-grow">
+          {% for stat in resumen %}
+          <!-- Tarjeta clickeable con filtro por cédula -->
+          <a href="{{ url_for('registro_salidas', fecha_desde=form.fecha_desde.data, fecha_hasta=form.fecha_hasta.data, cedula=stat.ci_nro) }}" 
+             class="block p-4 border border-slate-100 dark:border-slate-700 rounded-lg hover:border-primary/40 hover:shadow-md transition-all bg-white dark:bg-slate-900/40 no-underline hover:no-underline group cursor-pointer {{ 'ring-2 ring-primary/30 border-primary/50' if form.cedula.data == stat.ci_nro else '' }}">
             
-            <div class="col-lg-4 d-flex flex-column h-100">
-                <div class="card border-0 shadow-sm h-100 d-flex flex-column">
-                    <div class="card-header bg-white py-3 border-bottom d-flex align-items-center">
-                        <i class="fa-solid fa-chart-pie text-primary me-2"></i>
-                        <h6 class="mb-0 fw-bold">Resumen por Funcionario</h6>
-                    </div>
-                    <div class="card-body p-0 overflow-auto custom-scroll">
-                        <div class="list-group list-group-flush">
-                            {% for stat in resumen %}
-                            <div class="list-group-item p-3 border-bottom">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div class="fw-bold text-dark small">{{ stat.nombre }}</div>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill extra-small">
-                                        Total: {{ stat.total }}
-                                    </span>
-                                </div>
-                                <div class="row g-1 text-center">
-                                    <div class="col-4">
-                                        <div class="p-1 rounded bg-success bg-opacity-10 text-success">
-                                            <span class="d-block fw-bold small">{{ stat.cumplio }}</span>
-                                            <span class="extra-small">OK</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="p-1 rounded bg-warning bg-opacity-10 text-warning">
-                                            <span class="d-block fw-bold small">{{ stat.alerta }}</span>
-                                            <span class="extra-small">Alerta</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="p-1 rounded bg-danger bg-opacity-10 text-danger">
-                                            <span class="d-block fw-bold small">{{ stat.incumplio }}</span>
-                                            <span class="extra-small">Faltas</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
+            <div class="flex justify-between items-start mb-3">
+              <div class="flex-1">
+                <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors">{{ stat.nombre }}</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">CI: {{ stat.ci_nro }}</p>
+              </div>
+              <span class="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-800">
+                Total Salidas: {{ stat.total }}
+              </span>
             </div>
+            
+            <div class="grid grid-cols-3 gap-2">
+              <div class="bg-emerald-50/50 dark:bg-emerald-900/10 p-2.5 rounded text-center border border-emerald-100/50 dark:border-emerald-800/20">
+                <div class="text-emerald-700 dark:text-emerald-300 font-bold text-sm">{{ stat.cumplio }}</div>
+                <div class="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-tight mt-0.5">OK</div>
+              </div>
+              <div class="bg-amber-50/50 dark:bg-amber-900/10 p-2.5 rounded text-center border border-amber-100/50 dark:border-amber-800/20">
+                <div class="text-amber-700 dark:text-amber-300 font-bold text-sm">{{ stat.alerta }}</div>
+                <div class="text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-tight mt-0.5">Alerta</div>
+              </div>
+              <div class="bg-rose-50/50 dark:bg-rose-900/10 p-2.5 rounded text-center border border-rose-100/50 dark:border-rose-800/20">
+                <div class="text-rose-700 dark:text-rose-300 font-bold text-sm">{{ stat.incumplio }}</div>
+                <div class="text-[9px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-tight mt-0.5">Faltas</div>
+              </div>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </aside>
 
-            <div class="col-lg-8 d-flex flex-column h-100">
-                <div class="card border-0 shadow-sm h-100 d-flex flex-column">
-                    <div class="card-header bg-white py-3 border-bottom d-flex align-items-center">
-                        <i class="fa-solid fa-list-check text-success me-2"></i>
-                        <h6 class="mb-0 fw-bold">Detalle Cronológico de Marcaciones</h6>
-                    </div>
-                    <div class="card-body p-0 overflow-auto custom-scroll">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="sticky-top bg-light shadow-sm" style="z-index: 1;">
-                                <tr>
-                                    <th class="ps-3 extra-small text-uppercase text-muted">Funcionario</th>
-                                    <th class="extra-small text-uppercase text-muted">Fecha</th>
-                                    <th class="text-center extra-small text-uppercase text-muted">Salida</th>
-                                    <th class="text-center extra-small text-uppercase text-muted">Llegada</th>
-                                    <th class="extra-small text-uppercase text-muted">Motivo</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for reg in registros %}
-                                <tr>
-                                    <td class="ps-3">
-                                        <div class="fw-bold small text-dark">{{ reg.nombre_completo }}</div>
-                                        <div class="text-muted extra-small">CI: {{ reg.ci_nro }}</div>
-                                    </td>
-                                    <td class="small">{{ reg.fecha }}</td>
-                                    <td class="text-center">
-                                        <div class="p-1 rounded border-start border-3 border-primary bg-light" style="min-width: 90px;">
-                                            <div class="d-flex justify-content-between px-1 extra-small">
-                                                <span class="text-muted">E:</span> <span class="fw-bold">{{ reg.hora_salida_estipulada }}</span>
-                                            </div>
-                                            <div class="d-flex justify-content-between px-1 extra-small {{ colors[reg.estado_salida] }}">
-                                                <span>R:</span> <span>{{ reg.hora_salida_cercana }}</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="p-1 rounded border-start border-3 border-info bg-light" style="min-width: 90px;">
-                                            <div class="d-flex justify-content-between px-1 extra-small">
-                                                <span class="text-muted">E:</span> <span class="fw-bold">{{ reg.hora_llegada_estipulada }}</span>
-                                            </div>
-                                            <div class="d-flex justify-content-between px-1 extra-small {{ colors[reg.estado_llegada] }}">
-                                                <span>R:</span> <span>{{ reg.hora_llegada_cercana }}</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="extra-small text-dark text-truncate" style="max-width: 150px;" title="{{ reg.motivo }}">
-                                            <strong>{{ reg.motivo }}</strong>
-                                        </div>
-                                        <div class="extra-small text-muted text-truncate" style="max-width: 150px;">
-                                            <i class="fa-solid fa-location-dot"></i> {{ reg.destino }}
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <!-- Tabla detalle -->
+    <section class="lg:col-span-8 flex flex-col min-h-0">
+      <div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col h-full">
+        
+        <!-- Header con filtro activo si existe -->
+        <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 flex-shrink-0">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200 text-sm">
+              <span class="material-symbols-outlined text-primary">format_list_bulleted</span>
+              Detalle Cronológico
             </div>
+            <div class="flex items-center gap-2">
+              <a href="{{ url_for('descargar_pdf', 
+                          fecha_desde=form.fecha_desde.data, 
+                          fecha_hasta=form.fecha_hasta.data, 
+                          cedula=form.cedula.data, 
+                          tipo='admin') }}" 
+                          class="text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300 transition-colors flex items-center gap-1 no-underline hover:no-underline"
+                          title="Exportar a PDF">
+                          <span class="material-symbols-outlined">picture_as_pdf</span>
+                          <span class="text-sm font-medium">PDF</span>
+              </a>
+              <button onclick="window.print()" class="text-slate-400 hover:text-primary transition-colors" title="Imprimir">
+                <span class="material-symbols-outlined">print</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Indicador de filtro activo -->
+          {% if form.cedula.data %}
+          <div class="flex items-center gap-2 mt-2">
+            <span class="text-xs text-slate-500 dark:text-slate-400">Filtrando por:</span>
+            <span class="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold">
+              <span class="material-symbols-outlined !text-sm">person</span>
+              CI: {{ form.cedula.data }}
+            </span>
+            <a href="{{ url_for('registro_salidas', fecha_desde=form.fecha_desde.data, fecha_hasta=form.fecha_hasta.data) }}" 
+               class="text-xs text-slate-500 hover:text-rose-600 transition-colors no-underline hover:no-underline">
+              <span class="material-symbols-outlined !text-sm align-middle">close</span>
+            </a>
+          </div>
+          {% endif %}
         </div>
 
-    {% elif fecha_desde %}
-        <div class="flex-grow-1 d-flex align-items-center justify-content-center">
-            <div class="text-center opacity-50">
-                <i class="fa-solid fa-magnifying-glass fa-3x mb-2"></i>
-                <h5>No hay resultados</h5>
-            </div>
+        <!-- Scroll interno de la tabla -->
+        <div class="overflow-auto custom-scrollbar flex-grow">
+          <table class="w-full text-left border-collapse">
+            <thead class="sticky top-0 z-10 bg-slate-100 dark:bg-slate-800 shadow-sm">
+              <tr class="text-xs font-bold uppercase text-slate-600 dark:text-slate-300 tracking-wider">
+                <th class="px-6 py-4 border-b-2 border-slate-200 dark:border-slate-700 whitespace-nowrap">Funcionario</th>
+                <th class="px-6 py-4 border-b-2 border-slate-200 dark:border-slate-700 text-center whitespace-nowrap">Fecha</th>
+                <th class="px-6 py-4 border-b-2 border-slate-200 dark:border-slate-700 text-center whitespace-nowrap">Salida</th>
+                <th class="px-6 py-4 border-b-2 border-slate-200 dark:border-slate-700 text-center whitespace-nowrap">Llegada</th>
+                <th class="px-6 py-4 border-b-2 border-slate-200 dark:border-slate-700 whitespace-nowrap">Motivo / Local</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+              {% for reg in registros %}
+              <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition-colors">
+                
+                <!-- Funcionario -->
+                <td class="px-6 py-5">
+                  <div class="font-bold text-sm text-slate-900 dark:text-slate-100">{{ reg.nombre_completo }}</div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">CI: {{ reg.ci_nro }}</div>
+                </td>
+                
+                <!-- Fecha -->
+                <td class="px-6 py-5 text-center">
+                  <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 whitespace-nowrap">{{ reg.fecha }}</span>
+                </td>
+                
+                <!-- SALIDA -->
+                <td class="px-6 py-5">
+                  <div class="flex flex-col gap-2.5 items-center">
+                    <div class="flex items-center gap-2 text-sm">
+                      <span class="font-bold text-blue-600 dark:text-blue-400 text-xs">Est:</span>
+                      <span class="font-semibold text-slate-800 dark:text-slate-200">{{ reg.hora_salida_estipulada }}</span>
+                    </div>
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-lg {{ bg_colors[reg.estado_salida] }} border {{ border_colors[reg.estado_salida] }} min-w-[90px] justify-center">
+                      <span class="font-bold {{ colors[reg.estado_salida] }} text-xs">Real:</span>
+                      <span class="font-bold {{ colors[reg.estado_salida] }} text-sm">{{ reg.hora_salida_cercana }}</span>
+                    </div>
+                  </div>
+                </td>
+                
+                <!-- LLEGADA -->
+                <td class="px-6 py-5">
+                  <div class="flex flex-col gap-2.5 items-center">
+                    <div class="flex items-center gap-2 text-sm">
+                      <span class="font-bold text-blue-600 dark:text-blue-400 text-xs">Est:</span>
+                      <span class="font-semibold text-slate-800 dark:text-slate-200">{{ reg.hora_llegada_estipulada }}</span>
+                    </div>
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-lg {{ bg_colors[reg.estado_llegada] }} border {{ border_colors[reg.estado_llegada] }} min-w-[90px] justify-center">
+                      <span class="font-bold {{ colors[reg.estado_llegada] }} text-xs">Real:</span>
+                      <span class="font-bold {{ colors[reg.estado_llegada] }} text-sm">{{ reg.hora_llegada_cercana }}</span>
+                    </div>
+                  </div>
+                </td>
+                
+                <!-- Motivo/Local -->
+                <td class="px-6 py-5">
+                  <div class="font-semibold text-sm text-slate-800 dark:text-slate-200 mb-1.5">{{ reg.motivo }}</div>
+                  <div class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    <span class="material-symbols-outlined !text-sm">location_on</span>
+                    <span>{{ reg.destino }}</span>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
+
+        <!-- Pie de tabla -->
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between flex-shrink-0">
+          <div class="text-sm text-slate-600 dark:text-slate-400">
+            Mostrando <span class="font-bold text-slate-800 dark:text-slate-200">{{ registros|length }}</span> registros
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  {% else %}
+    {% if form.fecha_desde.data %}
+    <div class="flex flex-col items-center justify-center py-20 opacity-50 flex-grow">
+      <span class="material-symbols-outlined text-6xl mb-4 text-slate-300">search_off</span>
+      <h5 class="text-slate-500 font-medium">No se encontraron registros.</h5>
+    </div>
     {% else %}
-        <div class="flex-grow-1 d-flex align-items-center justify-content-center text-muted">
-            <p><i class="fa-solid fa-filter me-2"></i>Seleccione fechas para comenzar</p>
-        </div>
+    <div class="flex flex-col items-center justify-center py-20 opacity-50 flex-grow">
+      <span class="material-symbols-outlined text-6xl mb-4 text-slate-300">filter_alt</span>
+      <h5 class="text-slate-500 font-medium">Utilice los filtros superiores para comenzar.</h5>
+    </div>
     {% endif %}
+  {% endif %}
 
 </div>
 {% endblock %}

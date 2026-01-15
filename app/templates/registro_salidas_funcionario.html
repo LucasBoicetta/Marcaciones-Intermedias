@@ -1,125 +1,199 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-12">
+<!-- Contenedor principal con altura fija -->
+<div class="flex flex-col" style="height: calc(100vh - 215px);">
 
-        <div class="mb-3">
-            <a href="{{ url_for('index') }}" class="btn btn-back shadow-sm">
-                <i class="fa-solid fa-arrow-left me-2"></i> Volver al Menú
-            </a>
-        </div>
-        
-        <!-- 1. Formulario de Filtro (Arriba) -->
-        <div class="card shadow-sm mb-4 border-0">
-            <div class="card-body p-4">
-                <h5 class="card-title mb-3 text-primary"><i class="fa-solid fa-filter"></i> Filtrar Registros</h5>
-                <form action="{{ url_for('registro_salidas_funcionario') }}" method="GET" class="row g-3 align-items-end">
-                    <div class="col-md-4">
-                        <label for="fecha_desde" class="form-label fw-bold text-secondary">Fecha Desde</label>
-                        <input type="date" class="form-control" id="fecha_desde" name="fecha_desde" value="{{ fecha_desde }}" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="fecha_hasta" class="form-label fw-bold text-secondary">Fecha Hasta</label>
-                        <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta" value="{{ fecha_hasta }}" required>
-                    </div>
-                    <div class="col-md-4">
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fa-solid fa-magnifying-glass me-2"></i> Consultar
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-{% set colors = {
-    'cumplio': 'text-success fw-bold',
-    'alerta': 'text-warning fw-bold',
-    'incumplio': 'text-danger fw-bold',
-    'no_marco': 'text-danger fw-bold'
-}%}
-        <!-- Mostrar resultados solo si se ha realizado una búsqueda -->
-        {% if fecha_desde and fecha_hasta %}
-            
-            <!-- 2. Cabecera con Datos del Funcionario y Fechas -->
-            <div class="report-header d-flex justify-content-between align-items-center flex-wrap">
-                <div>
-                    <h4 class="mb-1 fw-bold text-dark">Reporte de Salidas Intermedias</h4>
-                    <p class="mb-0 text-muted">
-                        Funcionario: <strong class="text-dark">{{ current_user.nombre }} {{ current_user.apellido }}</strong> 
-                        <span class="mx-2">|</span> 
-                        C.I. Nº: <strong class="text-dark">{{ current_user.cedula }}</strong>
-                    </p>
-                </div>
-                <div class="text-end mt-2 mt-md-0">
-                    <span class="badge bg-light text-dark border p-2">
-                        <i class="fa-regular fa-calendar me-1"></i> {{ fecha_desde }} al {{ fecha_hasta }}
-                    </span>
-                </div>
-            </div>
-
-            <!-- 3. Tabla de Registros -->
-            <div class="table-container">
-                {% if registros %}
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th class="text-center bg-light border-start">Salida Estipulada</th>
-                                    <th class="text-center bg-light border-end">Salida Real</th>
-                                    <th class="text-center bg-light border-start">Llegada Estipulada</th>
-                                    <th class="text-center bg-light border-end">Llegada Real</th>
-                                    <th>Motivo</th>
-                                    <th>Destino</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for reg in registros %}
-                                <tr>
-                                    <td class="fw-bold text-primary">{{ reg.fecha }}</td>
-                                    
-                                    <!-- Salida -->
-                                    <td class="text-center border-start">{{ reg.hora_salida_estipulada }}</td>
-                                    <td class="text-center border-end {{ colors[reg.estado_salida] }}">
-                                        {{ reg.hora_salida_cercana }}
-                                    </td>
-                                    
-                                    <!-- Llegada -->
-                                    <td class="text-center border-start">{{ reg.hora_llegada_estipulada }}</td>
-                                    <td class="text-center border-end {{ colors[reg.estado_llegada] }}">
-                                        {{ reg.hora_llegada_cercana}}
-                                    </td>
-                                    
-                                    <td class="text-muted small">{{ reg.motivo }}</td>
-                                    <td>{{ reg.destino }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="mt-3 text-end">
-                        <button class="btn btn-outline-secondary btn-sm" onclick="window.print()">
-                            <i class="fa-solid fa-print me-1"></i> Imprimir Reporte
-                        </button>
-                    </div>
-
-                {% else %}
-                    <div class="text-center py-5">
-                        <i class="fa-regular fa-folder-open fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">No se encontraron registros en este rango de fechas.</h5>
-                    </div>
-                {% endif %}
-            </div>
-
-        {% else %}
-            <!-- Mensaje inicial cuando no se ha buscado nada -->
-            <div class="text-center py-5 text-muted">
-                <i class="fa-solid fa-arrow-up fa-2x mb-3"></i>
-                <p>Seleccione un rango de fechas arriba para ver sus registros.</p>
-            </div>
-        {% endif %}
-
+  <!-- Cabecera - FLEX-SHRINK-0 -->
+  <div class="flex items-center justify-between mb-4 flex-shrink-0">
+    <a href="{{ url_for('index') }}" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 text-sm font-medium transition-all text-slate-700 dark:text-slate-200 no-underline hover:no-underline">
+      <span class="material-symbols-outlined text-lg">arrow_back</span>
+      Volver al Menú
+    </a>
+    <div class="hidden sm:block text-slate-400 dark:text-slate-500 text-sm italic">
+      Mis Registros Personales
     </div>
+  </div>
+
+  <!-- Filtros - FLEX-SHRINK-0 -->
+  <section class="bg-white dark:bg-slate-800 p-5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm mb-4 flex-shrink-0">
+    <form action="{{ url_for('registro_salidas_funcionario') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+      
+      <!-- Fecha Desde -->
+      <div class="space-y-1.5">
+        <label for="fecha_desde" class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 px-1">
+          Fecha Desde
+        </label>
+        {{ form.fecha_desde(class="w-full h-11 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-md focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all text-sm") }}
+        {% if form.fecha_desde.errors %}
+          <div class="text-xs text-rose-600 mt-1">
+            {{ form.fecha_desde.errors[0] }}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Fecha Hasta -->
+      <div class="space-y-1.5">
+        <label for="fecha_hasta" class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 px-1">
+          Fecha Hasta
+        </label>
+        {{ form.fecha_hasta(class="w-full h-11 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-md focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all text-sm") }}
+        {% if form.fecha_hasta.errors %}
+          <div class="text-xs text-rose-600 mt-1">
+            {{ form.fecha_hasta.errors[0] }}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Botón -->
+      <div>
+        <button type="submit" class="w-full h-11 bg-primary hover:bg-blue-700 text-white font-semibold rounded-md shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all">
+          <span class="material-symbols-outlined text-lg">search</span>
+          Consultar
+        </button>
+      </div>
+    </form>
+  </section>
+
+  {% set colors = {
+    'cumplio': 'text-emerald-600 dark:text-emerald-400 font-medium',
+    'alerta': 'text-amber-600 dark:text-amber-400 font-medium',
+    'incumplio': 'text-rose-600 dark:text-rose-400 font-bold',
+    'no_marco': 'text-rose-400 font-bold'
+  }%}
+
+  {% if form.fecha_desde.data and form.fecha_hasta.data %}
+    
+    <!-- Cabecera del Reporte - FLEX-SHRINK-0 -->
+    <div class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm p-6 mb-4 flex-shrink-0">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Reporte de Salidas Intermedias</h2>
+          <p class="text-slate-600 dark:text-slate-400">
+            Funcionario: <strong class="text-slate-900 dark:text-white">{{ current_user.nombre }} {{ current_user.apellido }}</strong>
+            <span class="mx-2">|</span>
+            C.I.: <strong class="text-slate-900 dark:text-white">{{ current_user.cedula }}</strong>
+          </p>
+        </div>
+        <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700">
+          <span class="material-symbols-outlined text-primary">calendar_today</span>
+          <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">
+            {{ form.fecha_desde.data.strftime('%d/%m/%Y') }} al {{ form.fecha_hasta.data.strftime('%d/%m/%Y') }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de Registros - FLEX-GROW con altura dinámica -->
+    {% if registros %}
+    <div class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col flex-grow min-h-0">
+      
+      <!-- Header de tabla - FLEX-SHRINK-0 -->
+      <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200 text-sm">
+          <span class="material-symbols-outlined text-primary">format_list_bulleted</span>
+          Mis Registros de Salidas
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="{{ url_for('descargar_pdf', 
+                        fecha_desde=form.fecha_desde.data, 
+                        fecha_hasta=form.fecha_hasta.data, 
+                        tipo='funcionario') }}" 
+            class="text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300 transition-colors flex items-center gap-1 no-underline hover:no-underline" 
+            title="Exportar a PDF">
+            <span class="material-symbols-outlined">picture_as_pdf</span>
+            <span class="text-sm font-medium">PDF</span>
+          </a>
+          <!-- Botón Imprimir -->
+          <button onclick="window.print()" class="text-slate-400 hover:text-primary transition-colors" title="Imprimir">
+            <span class="material-symbols-outlined">print</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla con scroll interno - FLEX-GROW -->
+      <div class="overflow-auto custom-scrollbar flex-grow">
+        <table class="w-full text-left border-collapse">
+          <thead class="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/50 shadow-sm">
+            <tr class="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
+              <th class="px-6 py-4 border-b border-slate-100 dark:border-slate-700">Fecha</th>
+              <th class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 text-center">Salida</th>
+              <th class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 text-center">Retorno</th>
+              <th class="px-6 py-4 border-b border-slate-100 dark:border-slate-700">Motivo</th>
+              <th class="px-6 py-4 border-b border-slate-100 dark:border-slate-700">Destino</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+            {% for reg in registros %}
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
+              <td class="px-6 py-4 font-bold text-primary">{{ reg.fecha }}</td>
+              
+              <!-- Salida -->
+              <td class="px-6 py-4">
+                <div class="flex flex-col gap-1.5 items-center">
+                  <div class="flex items-center gap-2 text-sm">
+                    <span class="font-bold text-blue-500">Est:</span>
+                    <span class="font-semibold text-slate-700 dark:text-slate-300">{{ reg.hora_salida_estipulada }}</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-sm">
+                    <span class="font-bold {{ colors[reg.estado_salida] }}">Real:</span>
+                    <span class="font-bold {{ colors[reg.estado_salida] }}">{{ reg.hora_salida_cercana }}</span>
+                  </div>
+                </div>
+              </td>
+              
+              <!-- Llegada -->
+              <td class="px-6 py-4">
+                <div class="flex flex-col gap-1.5 items-center">
+                  <div class="flex items-center gap-2 text-sm">
+                    <span class="font-bold text-blue-500">Est:</span>
+                    <span class="font-semibold text-slate-700 dark:text-slate-300">{{ reg.hora_llegada_estipulada }}</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-sm">
+                    <span class="font-bold {{ colors[reg.estado_llegada] }}">Real:</span>
+                    <span class="font-bold {{ colors[reg.estado_llegada] }}">{{ reg.hora_llegada_cercana }}</span>
+                  </div>
+                </div>
+              </td>
+              
+              <!-- Motivo -->
+              <td class="px-6 py-4 text-base font-semibold text-slate-700 dark:text-slate-300">{{ reg.motivo }}</td>
+              
+              <!-- Destino -->
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                  <span class="material-symbols-outlined !text-[18px]">location_on</span>
+                  <span class="font-medium">{{ reg.destino }}</span>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pie de tabla - FLEX-SHRINK-0 -->
+      <div class="bg-slate-50 dark:bg-slate-800/80 border-t border-slate-100 dark:border-slate-700 p-4 flex items-center justify-between flex-shrink-0">
+        <div class="text-sm text-slate-600 dark:text-slate-400">
+          Mostrando <span class="font-bold text-slate-800 dark:text-slate-200">{{ registros|length }}</span> registros
+        </div>
+      </div>
+    </div>
+
+    {% else %}
+    <div class="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 flex-grow">
+      <span class="material-symbols-outlined text-6xl mb-4 text-slate-300">search_off</span>
+      <h5 class="text-slate-500 font-medium">No se encontraron registros en este rango de fechas.</h5>
+    </div>
+    {% endif %}
+
+  {% else %}
+    <!-- Mensaje inicial - FLEX-GROW -->
+    <div class="flex flex-col items-center justify-center py-20 text-slate-400 flex-grow">
+      <span class="material-symbols-outlined text-6xl mb-4">filter_alt</span>
+      <p class="font-medium">Seleccione un rango de fechas arriba para ver sus registros.</p>
+    </div>
+  {% endif %}
+
 </div>
 {% endblock %}

@@ -28,8 +28,17 @@ class FiltroReporteForm(FlaskForm):
 
     def validar_fechas(self):
         """Validación personalizada para el rango"""
-        if self.fecha_desde.data and self.fecha_hasta.data:
-            if self.fecha_desde.data > self.fecha_hasta.data:
+        # 1. Extraemos los datos a variables locales
+        desde = self.fecha_desde.data
+        hasta = self.fecha_hasta.data
+
+        # 2. Solo comparamos si AMBOS son objetos válidos (no None)
+        if desde is not None and hasta is not None:
+            if desde > hasta:
                 self.fecha_desde.errors.append('La fecha desde no puede ser mayor a la fecha hasta')
                 return False
-        return True
+            return True
+        
+        # 3. Si alguno es None, el validador DataRequired() ya se encargará 
+        # de mostrar el error, nosotros solo retornamos False para no romper Python.
+        return False

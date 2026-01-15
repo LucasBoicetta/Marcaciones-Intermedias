@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: letter landscape;
+            margin: 0.5cm;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+        }
+        
+        .header h1 {
+            color: #000;
+            font-size: 16px;
+            margin: 3px 0;
+        }
+        
+        .header p {
+            margin: 2px 0;
+            font-size: 10px;
+            color: #000;
+        }
+        
+        .section-title {
+            background-color: #f0f0f0;
+            padding: 6px 8px;
+            margin: 12px 0 8px 0;
+            font-weight: bold;
+            font-size: 11px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        
+        th {
+            background-color: #e9ecef;
+            border: 1px solid #333;
+            padding: 5px 3px;
+            text-align: center;
+            font-size: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        td {
+            border: 1px solid #333;
+            padding: 4px 3px;
+            font-size: 8px;
+            vertical-align: middle;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        .text-center { text-align: center; }
+        
+        /* Colores de estado SOLO para tabla de detalle */
+        .cumplio { color: #198754; font-weight: bold; }
+        .alerta { color: #fd7e14; font-weight: bold; }
+        .incumplio, .no_marco { color: #dc3545; font-weight: bold; }
+        
+        /* Para el resumen: SIN colores de fondo */
+        .stat-number {
+            display: inline-block;
+            font-weight: bold;
+            font-size: 9px;
+        }
+        
+        .small-text { font-size: 7px; color: #666; }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <h1>Sindicatura General de Quiebras</h1>
+        <p><strong>Sistema de Marcaciones Intermedias</strong></p>
+        <p>Período: {{ fecha_desde }} al {{ fecha_hasta }}</p>
+        {% if tipo == 'funcionario' %}
+            <p>Funcionario: <strong>{{ nombre_funcionario }}</strong> | CI: <strong>{{ cedula_funcionario }}</strong></p>
+        {% endif %}
+    </div>
+
+    <!-- RESUMEN (Solo para Admin) - SIN COLORES DE FONDO -->
+    {% if resumen %}
+    <div class="section-title">Resumen Estadístico por Funcionario</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 30%;">Funcionario</th>
+                <th style="width: 12%;">CI</th>
+                <th style="width: 10%;">Total</th>
+                <th style="width: 16%;">Cumplió</th>
+                <th style="width: 16%;">Alerta</th>
+                <th style="width: 16%;">Incumplió</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat in resumen %}
+            <tr>
+                <td style="font-weight: bold;">{{ stat.nombre }}</td>
+                <td class="text-center">{{ stat.ci_nro }}</td>
+                <td class="text-center" style="font-weight: bold;">{{ stat.total }}</td>
+                <td class="text-center">
+                    {% if stat.cumplio > 0 %}
+                        <span class="stat-number">{{ stat.cumplio }}</span>
+                    {% else %} - {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if stat.alerta > 0 %}
+                        <span class="stat-number">{{ stat.alerta }}</span>
+                    {% else %} - {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if stat.incumplio > 0 %}
+                        <span class="stat-number">{{ stat.incumplio }}</span>
+                    {% else %} - {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <!-- DETALLE CRONOLÓGICO - CON COLORES -->
+    <div class="section-title">Detalle Cronológico de Salidas</div>
+    <table>
+        <thead>
+            <tr>
+                {% if tipo == 'admin' %}
+                <th style="width: 18%;">Funcionario</th>
+                {% endif %}
+                <th style="width: 8%;">Fecha</th>
+                <th style="width: 6%;">S. Est.</th>
+                <th style="width: 6%;">S. Real</th>
+                <th style="width: 6%;">L. Est.</th>
+                <th style="width: 6%;">L. Real</th>
+                <th style="width: {% if tipo == 'admin' %}25{% else %}35{% endif %}%;">Motivo</th>
+                <th style="width: {% if tipo == 'admin' %}25{% else %}35{% endif %}%;">Destino</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reg in registros %}
+            <tr>
+                {% if tipo == 'admin' %}
+                <td style="font-weight: bold; font-size: 7.5px; width: 18%;">
+                    {{ reg.nombre_completo }}<br>
+                    <span class="small-text">CI: {{ reg.ci_nro }}</span>
+                </td>
+                {% endif %}
+                <td class="text-center" style="font-size: 7.5px; width: 8%;">{{ reg.fecha }}</td>
+                <td class="text-center" style="width: 6%;">{{ reg.hora_salida_estipulada }}</td>
+                <td class="text-center {{ reg.estado_salida }}" style="width: 6%;">{{ reg.hora_salida_cercana }}</td>
+                <td class="text-center" style="width: 6%;">{{ reg.hora_llegada_estipulada }}</td>
+                <td class="text-center {{ reg.estado_llegada }}" style="width: 6%;">{{ reg.hora_llegada_cercana }}</td>
+                <td style="font-size: 7.5px; width: {% if tipo == 'admin' %}25{% else %}35{% endif %}%;">{{ reg.motivo }}</td>
+                <td style="font-size: 7.5px; width: {% if tipo == 'admin' %}25{% else %}35{% endif %}%;">{{ reg.destino }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Footer -->
+    <div style="text-align: center; margin-top: 15px; font-size: 7px; color: #999; padding-top: 8px;">
+        <p>Generado automáticamente el {{ fecha_generacion }}</p>
+    </div>
+</body>
+</html>

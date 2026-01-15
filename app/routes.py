@@ -1,8 +1,8 @@
 from app import app, db
-from app.services import obtener_reporte_salidas_procesado, obtener_reporte_salidas_funcionario
+from app.services import obtener_reporte_salidas_procesado, obtener_reporte_salidas_funcionario, preparar_reporte_para_pdf
 from app.models import FormularioSalida, Usuario, MarcacionIntermediaGeneral
 from app.forms import CargarSalidaForm, LoginForm, FiltroReporteForm
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, make_response
 from flask_login import current_user, login_required, logout_user, login_user
 from datetime import date, datetime
 from urllib.parse import urlparse
@@ -74,28 +74,28 @@ def registro_salidas():
 @app.route('/registro_salidas_funcionario', methods=['GET'])
 @login_required
 def registro_salidas_funcionario():
-        fecha_desde_str = request.args.get('fecha_desde', '')
-        fecha_hasta_str = request.args.get('fecha_hasta', '')
+        #Le pasamos request.args al formulario (para que mantenga los valores en la URL).
+        form = FiltroReporteForm(request.args)
 
-        if not fecha_desde_str or not fecha_hasta_str:
+        #Valores por defecto para no mostrar un reporte con tablas vacías.
+        if not request.args:
             return render_template('registro_salidas_funcionario.html', registros=[],
-                                    fecha_desde='', fecha_hasta='')
+                                    form=form)
+        #Cuando el formulario usa metodos get se utiliza el form.validate()
+        if form.validate() and form.validar_fechas():
+            try:
+                #--- Llamada al servicio ---
+                registro = obtener_reporte_salidas_funcionario(form.fecha_desde.data, form.fecha_hasta.data)
 
-        try:
-            fecha_desde_obj = datetime.strptime(fecha_desde_str, '%Y-%m-%d').date()
-            fecha_hasta_obj = datetime.strptime(fecha_hasta_str, '%Y-%m-%d').date()
-            if fecha_desde_obj > fecha_hasta_obj:
-                flash('La fecha desde no puede ser mayor a la fecha hasta', 'danger')
-                return render_template('registro_salidas_funcionario.html', registros=[])
+                return render_template('registro_salidas_funcionario.html', registros=registro,
+                                        form=form)
+            except Exception as e:
+                #Manejo general de errores inesperados. Guarda el error en el log del app.
+                app.logger.error(f'Error generando reporte: {e}')
+                flash('Ocurrió un error al generar el reporte. Intente nuevamente.', 'danger')
 
-            #--- Llamada al servicio ---
-            registro = obtener_reporte_salidas_funcionario(fecha_desde_obj, fecha_hasta_obj)
-
-            return render_template('registro_salidas_funcionario.html', registros=registro,
-                                    fecha_desde=fecha_desde_str, fecha_hasta=fecha_hasta_str)
-        except ValueError:
-            return 'Formato de fecha invalido', 400
-
+        #Si llega hasta acá es porque validate() falló o hubo una excepción.
+        return render_template('registro_salidas_funcionario.html', registros=[], form=form)
 
 #RUTAS PARA INICIAR Y CERRAR SESIÓN.
 @app.route('/login', methods=['GET', 'POST'])
@@ -129,3 +129,42 @@ def logout():
     flash('Has cerrado sesión correctamente.', 'success')
     return redirect(url_for('login'))
 
+#RUTA PARA DESCARGAR PDF.
+@app.route('/descargar_pdf')
+@login_required
+def descargar_pdf():
+    form = FiltroReporteForm(request.args)
+    tipo = request.args.get('tipo', 'admin')
+
+    #Validaciones de entrada.
+    if not request.args:
+        flash('Debe especificar un rango de fechas', 'warning')
+        return redirect(url_for('index'))
+    
+    if not form.validate() or not form.validar_fechas():
+        flash('Fechas inválidas. Intente nuevamente.', 'warning')
+        return redirect(request.referrer or url_for('index'))
+    
+    try:
+        #Llamada al servicio para generar el PDF.
+        pdf_bytes, file_name = preparar_reporte_para_pdf(
+            tipo=tipo,
+            fecha_desde=form.fecha_desde.data,
+            fecha_hasta=form.fecha_hasta.data,
+            cedula_filtro=form.cedula.data or None,
+            usuario_actual=current_user
+        )
+
+        if not pdf_bytes:
+            raise Exception("El generador de PDF devolvió un contenido vacío.")
+        
+        #Construnccion de la respuesta.
+        response = make_response(pdf_bytes)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'attachment; filename={file_name}'
+        return response
+    
+    except Exception as e:
+        app.logger.error(f'Error descargando PDF: {e}')
+        flash('Ocurrió un error al generar el PDF. Intente nuevamente.', 'danger')
+        return redirect(request.referrer or url_for('index'))  

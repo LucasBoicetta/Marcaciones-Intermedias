@@ -29,3 +29,5 @@ app.db
 
 # --- Logs ---
 *.log
+
+.semilla.pyc

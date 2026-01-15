@@ -1,60 +1,82 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row mb-5 text-center text-md-start align-items-center">
-        <div class="col-md-8">
-            <h2 class="fw-bold text-dark mb-1">Panel de Control</h2>
-            <p class="text-muted">Bienvenido, {{ current_user.nombre }} {{ current_user.apellido }}</p>
-        </div>
-        <div class="col-md-4 text-center text-md-end">
-            <img src="{{ url_for('static', filename='logoSindicaturaNew-removebg-preview.png')}}" alt="Logo" style="height: 60px; width: auto;">
+<div class="py-8">
+    <!-- Encabezado -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
+        <div>
+            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white sm:text-4xl">
+                Panel de Control
+            </h2>
+            <p class="mt-2 text-lg text-slate-500 dark:text-slate-400">
+                Bienvenido de nuevo, <span class="font-semibold text-primary">{{ current_user.nombre }} {{ current_user.apellido }}</span>
+            </p>
         </div>
     </div>
 
-    <div class="row g-4">
-        <div class="col-md-6 col-lg-4">
-            <a href="{{ url_for('formulario_salidas') }}" class="text-decoration-none">
-                <div class="card h-100 action-card border-0 shadow-sm p-3">
-                    <div class="card-body">
-                        <div class="icon-box bg-primary bg-opacity-10 text-primary mb-3">
-                            <i class="fa-solid fa-pen-to-square fa-xl"></i>
-                        </div>
-                        <h5 class="fw-bold text-dark">Solicitar Salida</h5>
-                        <p class="text-muted small">Registra una nueva salida intermedia o comisión de servicio.</p>
-                    </div>
+    <!-- Grid de Tarjetas -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Tarjeta 1: Solicitar Salida -->
+        <a href="{{ url_for('formulario_salidas') }}" class="group relative bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden no-underline hover:no-underline">
+            <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                <span class="material-symbols-outlined !text-9xl">edit_note</span>
+            </div>
+            <div class="flex flex-col h-full">
+                <div class="w-14 h-14 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6 transition-colors group-hover:bg-primary">
+                    <span class="material-symbols-outlined text-primary group-hover:text-white text-3xl transition-colors">edit_square</span>
                 </div>
-            </a>
-        </div>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Solicitar Salida</h3>
+                <p class="text-slate-500 dark:text-slate-400 leading-relaxed text-sm">
+                    Registra una nueva salida intermedia o comisión de servicio de manera rápida.
+                </p>
+                <div class="mt-auto pt-6 flex items-center text-primary font-semibold text-sm">
+                    Comenzar trámite
+                    <span class="material-symbols-outlined ml-1 text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </div>
+            </div>
+        </a>
 
-        <div class="col-md-6 col-lg-4">
-            <a href="{{ url_for('registro_salidas_funcionario') }}" class="text-decoration-none">
-                <div class="card h-100 action-card border-0 shadow-sm p-3">
-                    <div class="card-body">
-                        <div class="icon-box bg-success bg-opacity-10 text-success mb-3">
-                            <i class="fa-solid fa-calendar-check fa-xl"></i>
-                        </div>
-                        <h5 class="fw-bold text-dark">Mis Registros</h5>
-                        <p class="text-muted small">Consulta tu historial personal y estados de cumplimiento.</p>
-                    </div>
+        <!-- Tarjeta 2: Mis Registros -->
+        <a href="{{ url_for('registro_salidas_funcionario') }}" class="group relative bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden no-underline hover:no-underline">
+            <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                <span class="material-symbols-outlined !text-9xl">event_available</span>
+            </div>
+            <div class="flex flex-col h-full">
+                <div class="w-14 h-14 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center mb-6 transition-colors group-hover:bg-emerald-600">
+                    <span class="material-symbols-outlined text-emerald-600 group-hover:text-white text-3xl transition-colors">calendar_today</span>
                 </div>
-            </a>
-        </div>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Mis Registros</h3>
+                <p class="text-slate-500 dark:text-slate-400 leading-relaxed text-sm">
+                    Consulta tu historial personal de marcaciones y estados de cumplimiento.
+                </p>
+                <div class="mt-auto pt-6 flex items-center text-emerald-600 font-semibold text-sm">
+                    Ver mi historial
+                    <span class="material-symbols-outlined ml-1 text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </div>
+            </div>
+        </a>
 
-        {% if current_user.tipousuario == '1' or current_user.cedula == '6556063' %} 
-        <div class="col-md-6 col-lg-4">
-            <a href="{{ url_for('registro_salidas') }}" class="text-decoration-none">
-                <div class="card h-100 action-card border-0 shadow-sm p-3">
-                    <div class="card-body">
-                        <div class="icon-box bg-warning bg-opacity-10 text-warning mb-3">
-                            <i class="fa-solid fa-user-shield fa-xl"></i>
-                        </div>
-                        <h5 class="fw-bold text-dark">Administración</h5>
-                        <p class="text-muted small">Panel de auditoría y reportes generales para supervisores.</p>
-                    </div>
+        <!-- Tarjeta 3: Administración -->
+        {% if current_user.tipousuario == '1' or current_user.cedula == '6556063' %}
+        <a href="{{ url_for('registro_salidas') }}" class="group relative bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden no-underline hover:no-underline">
+            <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                <span class="material-symbols-outlined !text-9xl">admin_panel_settings</span>
+            </div>
+            <div class="flex flex-col h-full">
+                <div class="w-14 h-14 bg-amber-50 dark:bg-amber-900/30 rounded-xl flex items-center justify-center mb-6 transition-colors group-hover:bg-amber-500">
+                    <span class="material-symbols-outlined text-amber-600 group-hover:text-white text-3xl transition-colors">manage_accounts</span>
                 </div>
-            </a>
-        </div>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Administración</h3>
+                <p class="text-slate-500 dark:text-slate-400 leading-relaxed text-sm">
+                    Panel de auditoría y reportes generales exclusivo para supervisores.
+                </p>
+                <div class="mt-auto pt-6 flex items-center text-amber-600 font-semibold text-sm">
+                    Acceder al panel
+                    <span class="material-symbols-outlined ml-1 text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </div>
+            </div>
+        </a>
         {% endif %}
     </div>
 </div>
